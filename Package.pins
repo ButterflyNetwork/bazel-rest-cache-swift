@@ -8,6 +8,12 @@
       "version": "0.2.3"
     },
     {
+      "package": "CZlib",
+      "reason": null,
+      "repositoryURL": "https://github.com/IBM-Swift/CZlib.git",
+      "version": "0.1.1"
+    },
+    {
       "package": "HeliumLogger",
       "reason": null,
       "repositoryURL": "https://github.com/IBM-Swift/HeliumLogger.git",
@@ -30,6 +36,12 @@
       "reason": null,
       "repositoryURL": "https://github.com/IBM-Swift/Kitura-net.git",
       "version": "1.7.6"
+    },
+    {
+      "package": "KituraCompression",
+      "reason": null,
+      "repositoryURL": "https://github.com/IBM-Swift/Kitura-Compression.git",
+      "version": "1.7.0"
     },
     {
       "package": "LoggerAPI",

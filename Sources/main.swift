@@ -1,6 +1,7 @@
 import Foundation
 import HeliumLogger
 import Kitura
+import KituraCompression
 import LoggerAPI
 import SwiftRedis
 
@@ -9,6 +10,7 @@ HeliumLogger.use()
 let router: Router = {
     let router = Router()
     router.all(middleware: BodyParser())
+    router.all(middleware: Compression())
     return router
 }()
 
