@@ -5,7 +5,7 @@ import KituraCompression
 import LoggerAPI
 import SwiftRedis
 
-HeliumLogger.use()
+HeliumLogger.use(.info)
 
 let router: Router = {
     let router = Router()
