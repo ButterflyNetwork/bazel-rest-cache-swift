@@ -14,6 +14,16 @@ let router: Router = {
     return router
 }()
 
+let byteCountFormatter: ByteCountFormatter = {
+    let formatter = ByteCountFormatter()
+    formatter.allowedUnits = [
+        .useKB,
+        .useMB,
+        .useGB,
+    ]
+    return formatter
+}()
+
 func redis() -> Redis {
     let redis = Redis()
     let redisUrl = URL(string: ProcessInfo.processInfo.environment["REDIS_URL"]!)!
@@ -49,17 +59,15 @@ func redis() -> Redis {
 }
 
 router.head("/cache/:key") { request, response, next in
-    Log.info("HEAD: \(request.parameters["key"] ?? "")")
-
     if let key = request.parameters["key"] {
         redis().exists(key) { (count, err) in
             if let count = count, count > 0 {
-                Log.info("Hit: \(request.parameters["key"] ?? "")")
+                Log.info("HEAD - HIT: \(request.parameters["key"] ?? "")")
                 response
                     .status(.OK)
                     .send("")
             } else {
-                Log.info("Miss: \(request.parameters["key"] ?? "")")
+                Log.info("HEAD - MISS: \(request.parameters["key"] ?? "")")
                 response
                     .status(.notFound)
                     .send("")
@@ -76,17 +84,16 @@ router.head("/cache/:key") { request, response, next in
 }
 
 router.get("/cache/:key") { request, response, next in
-    Log.info("GET: \(request.parameters["key"] ?? "")")
-
     if let key = request.parameters["key"] {
         redis().get(key) { (str, err) in
             if let data = str?.asData {
-                Log.info("Hit: \(request.parameters["key"] ?? "")")
+                let byteCount = byteCountFormatter.string(fromByteCount: Int64(data.count))
+                Log.info("GET - HIT: \(byteCount) -> \(request.parameters["key"] ?? "")")
                 response
                     .status(.OK)
                     .send(data: data)
             } else {
-                Log.info("Miss: \(request.parameters["key"] ?? "")")
+                Log.info("GET - MISS: \(request.parameters["key"] ?? "")")
                 response
                     .status(.notFound)
                     .send("")
@@ -103,12 +110,12 @@ router.get("/cache/:key") { request, response, next in
 }
 
 router.put("/cache/:key") { request, response, next in
-    Log.info("PUT: \(request.parameters["key"] ?? "")")
-
     if let key = request.parameters["key"],
        let body = request.body {
         switch body {
         case .raw(let data):
+            let byteCount = byteCountFormatter.string(fromByteCount: Int64(data.count))
+            Log.info("PUT: \(byteCount) -> \(request.parameters["key"] ?? "")")
             redis().set(key, value: RedisString(data)) { (didSet, err) in
                 if didSet {
                     response
