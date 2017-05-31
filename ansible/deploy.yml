@@ -1,0 +1,10 @@
+- hosts: all
+  vars:
+    - ansistrano_deploy_from: "{{ playbook_dir }}/../.build/release"
+    - ansistrano_deploy_to: "/Users/{{ ansible_ssh_user }}/srv/bazel-rest-cache"
+    - ansistrano_keep_releases: 3
+    - ansistrano_deploy_via: "rsync"
+    - ansistrano_allow_anonymous_stats: no
+    - ansistrano_rsync_extra_params: "--delete"
+  roles:
+    - { role: "./roles/ansistrano" }
