@@ -1,7 +1,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "bni-builds",
+    name: "bazel-rest-cache",
     dependencies: [
         .Package(
             url: "https://github.com/IBM-Swift/Kitura.git",
