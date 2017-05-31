@@ -15,26 +15,55 @@ def _fix_chttp_load_command(configuration_name)
 end
 
 namespace :build do
+  desc "Performs a clean"
+  task :clean do
+    Dir.chdir $0 do
+      sh Shellwords.shelljoin [
+        "swift",
+        "package",
+        "clean",
+      ]
+    end
+  end
+
   desc "Perform a debug build"
   task :debug do
-    configuration = "debug"
-    sh Shellwords.shelljoin [
-      "swift",
-      "build",
-      "-c", configuration,
-    ]
-    _fix_chttp_load_command(configuration)
+    Dir.chdir $0 do
+      configuration = "debug"
+      sh Shellwords.shelljoin [
+        "swift",
+        "build",
+        "-c", configuration,
+      ]
+      _fix_chttp_load_command(configuration)
+    end
   end
 
   desc "Perform a release build"
   task :release do
-    configuration = "release"
+    Dir.chdir $0 do
+      configuration = "release"
+      sh Shellwords.shelljoin [
+        "swift",
+        "build",
+        "-c", configuration,
+        "-Xswiftc", "-static-stdlib",
+      ]
+      _fix_chttp_load_command(configuration)
+    end
+  end
+end
+
+desc "Deploys the application"
+task :deploy do
+  Rake::Task['build:clean'].invoke
+  Rake::Task['build:release'].invoke
+  Dir.chdir "#{$0}/ansible" do
     sh Shellwords.shelljoin [
-      "swift",
-      "build",
-      "-c", configuration,
-      "-Xswiftc", "-static-stdlib",
+      "ansible-playbook",
+      "-i", "hosts",
+      "deploy.yml",
+      "--vault-password-file", "~/.bnivault",
     ]
-    _fix_chttp_load_command(configuration)
   end
 end
