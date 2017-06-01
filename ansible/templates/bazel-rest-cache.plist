@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  A launchd config for loading bazel-rest-cache on system boot on macOS.
+-->
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>{{ bazel_rest_cache_label }}</string>
+
+    <key>UserName</key>
+    <string>{{ bazel_rest_cache_user }}</string>
+
+    <key>ProgramArguments</key>
+    <array>
+      <string>{{ bazel_rest_cache_bin }}</string>
+    </array>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>OnDemand</key>
+    <false/>
+
+    <key>ProcessType</key>
+    <string>Interactive</string>
+
+    <key>SessionCreate</key>
+    <true/>
+
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+
+    <key>StandardOutPath</key>
+    <string>{{ bazel_rest_cache_log_path }}</string>
+
+    <key>StandardErrorPath</key>
+    <string>{{ bazel_rest_cache_log_path }}</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+      <key>PATH</key>
+      <string>/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin</string>
+
+      <key>REDIS_URL</key>
+      <string>{{ bazel_rest_cache_redis_url }}</string>
+    </dict>
+  </dict>
+</plist>

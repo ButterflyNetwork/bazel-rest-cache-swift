@@ -1,0 +1,3 @@
+[submodule "ansible/roles/ansistrano"]
+	path = ansible/roles/ansistrano
+	url = https://github.com/ansistrano/deploy.git

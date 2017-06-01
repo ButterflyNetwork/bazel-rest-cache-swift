@@ -1,0 +1,30 @@
+- hosts: all
+  vars:
+    - ansistrano_deploy_from: "{{ playbook_dir }}/../.build/release"
+    - ansistrano_deploy_to: "/Users/{{ ansible_ssh_user }}/srv/bazel-rest-cache"
+    - ansistrano_keep_releases: 3
+    - ansistrano_deploy_via: "rsync"
+    - ansistrano_allow_anonymous_stats: no
+    - ansistrano_rsync_extra_params: "--delete"
+    - bazel_rest_cache_label: com.butterflynetinc.com.bazel-rest-cache
+    - bazel_rest_cache_user: "{{ ansible_ssh_user }}"
+    - bazel_rest_cache_bin: "{{ ansistrano_deploy_to }}/current/release/bazel-rest-cache"
+    - bazel_rest_cache_log_path: "{{ ansistrano_deploy_to }}/bazel-rest-cache.log"
+    - bazel_rest_cache_redis_url: "redis://localhost:6379"
+    - bazel_rest_cache_plist: "/Users/{{ ansible_ssh_user }}/Library/LaunchAgents/{{ bazel_rest_cache_label }}.plist"
+  roles:
+    - { role: "./roles/ansistrano" }
+  tasks:
+    - name: Bazel Rest Cache LaunchAgent plist
+      template:
+        src: bazel-rest-cache.plist
+        dest: "{{ bazel_rest_cache_plist }}"
+        owner: "{{ ansible_ssh_user }}"
+        mode: 0644
+    - name: Stop Bazel Rest Cache Service
+      shell: |
+        /bin/launchctl unload {{ bazel_rest_cache_plist }}
+      ignore_errors: yes
+    - name: Start Bazel Rest Cache Service
+      shell: |
+        /bin/launchctl load {{ bazel_rest_cache_plist }}
