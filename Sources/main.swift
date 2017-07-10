@@ -122,6 +122,9 @@ router.put("/cache/:key") { request, response, next in
                         .status(.OK)
                         .send("")
                 } else {
+                    if let err = err {
+                        Log.error("PUT: Error: \(String(describing: err))")
+                    }
                     response
                         .status(.internalServerError)
                         .send("")
